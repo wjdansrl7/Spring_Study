@@ -1,10 +1,11 @@
-package hello.core.member;
+package hello.core1.member;
 
 public class MemberServiceImpl implements MemberService {
 
-//    private final MemberRepository memberRepository = new MemoryMemberRepository();
+//    interface에만 의존하도록 설계
     private final MemberRepository memberRepository;
 
+//    생성자를 통해 주입받도록 하였다.
     public MemberServiceImpl(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
@@ -17,10 +18,5 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId);
-    }
-
-    // 테스트 용도
-    public MemberRepository getMemberRepository() {
-        return memberRepository;
     }
 }
