@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 /**
  * 1. 파라미터 전송 기능
@@ -15,7 +14,7 @@ import java.util.Enumeration;
  */
 
 @WebServlet(name = "requestParamServlet", urlPatterns = "/request-param")
-public class requestParamServlet extends HttpServlet {
+public class RequestParamServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
