@@ -15,7 +15,7 @@ import java.util.Locale;
 
 @Slf4j
 @RestController
-public class requestHeaderController {
+public class RequestHeaderController {
 
     @RequestMapping("/headers")
     public String headers(HttpServletRequest request,
