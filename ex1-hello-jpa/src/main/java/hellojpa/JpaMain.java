@@ -67,8 +67,8 @@ public class JpaMain {
 //            Member member1 = new Member(150L, "A");
 //            Member member2 = new Member(160L, "B");
 
-            Member member1 = em.find(Member.class, 150L);
-            member1.setName("AAAAAA");
+//            Member member1 = em.find(Member.class, 150L);
+//            member1.setName("AAAAAA");
 
             // 영속성 컨텍스트를 통째로 날려버린다.
 //            em.clear();
@@ -87,7 +87,47 @@ public class JpaMain {
 
 //            em.persist(member1);
 //            em.persist(member2);
-            System.out.println("============================");
+
+//            Member member = new Member();
+//            member.setId(2L);
+//            member.setName("memberA");
+
+//            em.persist(member);
+
+//            System.out.println("============================");
+
+            Member member1 = new Member();
+//            member.setId("ID_A");
+            member1.setUsername("A");
+
+            Member member2 = new Member();
+            member2.setUsername("B");
+
+            Member member3 = new Member();
+            member3.setUsername("C");
+
+//          예외적으로 IDENTITY전략에서만 persist하면 바로 실행된다.
+//          IDENTITY전략은 SQL문이 실행되어야만 그때 Pk를 생성하므로
+//          1차 캐시에서는 식별자로 @ID를 쓰고 있는데, 따라서 바로 생성되어야 한다.
+//          영속성 컨텍스트를 하려면 무조건 Pk를 가져와야 한다.
+//          어? SEQUENCE 전략이네? DB에서 값을 얻어와야 겠다.!!!
+
+//          따라서 SEQUENCE 전략은 값을 쭉 모아놨다가 한번에 commit 해줘도 되고,
+//          IDENTITY 전략은 우선 select로 pk값을 얻어와야 하므로 바로 SQL문을 날려줘야 한다.
+            System.out.println("==================");
+
+//          DB SEQ = 1 | 1
+//          DB SEQ = 51 | 2
+//          DB SEQ = 51 | 3
+
+            em.persist(member1);
+            em.persist(member2);
+            em.persist(member3);
+
+            System.out.println("member1.getId() = " + member1.getId());
+            System.out.println("member2.getId() = " + member2.getId());
+            System.out.println("member3.getId() = " + member3.getId());
+            System.out.println("==================");
 
             tx.commit();
         } catch (Exception e) {
