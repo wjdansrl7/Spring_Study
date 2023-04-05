@@ -8,6 +8,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
 
@@ -458,20 +459,92 @@ public class JpaMain {
 //            System.out.println("findMember.username = " + findMember.getUsername());
 //            System.out.println("after findMember = " + findMember.getClass());
 
-            Child child1 = new Child();
-            Child child2 = new Child();
+//            Child child1 = new Child();
+//            Child child2 = new Child();
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
+//            Parent parent = new Parent();
+//            parent.addChild(child1);
+//            parent.addChild(child2);
 
-            em.persist(parent);
+//            em.persist(parent);
+
+//            em.flush();
+//            em.clear();
+
+//            Parent findParent = em.find(Parent.class, parent.getId());
+//            em.remove(findParent);
+
+//            Address address = new Address("city", "street", "10000");
+
+//            Member member1 = new Member();
+//            member1.setUsername("member1");
+//            member1.setHomeAddress(address);
+//            em.persist(member1);
+
+//            Address newAddress = new Address("newCity", address.getStreet(), address.getZipcode());
+//            member1.setHomeAddress(newAddress);
+
+//            member.setHomeAddress(new Address("city", "street", "10"));
+//            member.setWorkPeriod(new Period());
+
+//            em.persist(member);
+
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(new Address("homeCity", "street", "1000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("탕수육");
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "1000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "1000"));
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            Parent findParent = em.find(Parent.class, parent.getId());
-            em.remove(findParent);
+
+//            Member 테이블만 조회된 것으로 보아 값 타입 컬렉션들은 모두 지연 로딩이다.
+            System.out.println("============= START ==================");
+
+//            TODO: 조회
+            Member findMember = em.find(Member.class, member.getId());
+
+//            List<Address> addressHistory = findMember.getAddressHistory();
+//            for (Address address : addressHistory) {
+//                System.out.println("address.getCity() = " + address.getCity());
+//            }
+//
+//            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+//            for (String favoriteFood : favoriteFoods) {
+//                System.out.println("favoriteFood = " + favoriteFood);
+//            }
+
+//            TODO: 수정
+//            homeCity -> newCity
+//            findMember.getHomeAddress().setCity("newCity"); => XXXX
+
+//            값 타입 하나를 바꿔도 아예 새로 갈아 끼워야 한다.
+            Address a = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
+
+//            치킨 -> 한식
+//            FavoriteFoods 자체가 String이기 때문에 update를 할 수가 없다. 따라서 새로 값을 넣어준다.
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+
+//            주소 변경
+
+//            findMember.getAddressHistory().remove(new Address("old1", "street", "1000"));
+//            findMember.getAddressHistory().add(new Address("newCity1", "street", "1000"));
+
+
+
+
+
+
 
 
 
