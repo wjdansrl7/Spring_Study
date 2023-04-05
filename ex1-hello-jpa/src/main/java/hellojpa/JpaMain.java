@@ -1,5 +1,7 @@
 package hellojpa;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -373,19 +375,122 @@ public class JpaMain {
 //            Item item = em.find(Item.class, movie.getId());
 //            System.out.println("item = " + item);
 
-            Member member = new Member();
-            member.setUsername("Kim");
-            member.setCreateDate(LocalDateTime.now());
+//            Team team = new Team();
+//            team.setName("TeamA");
+//            em.persist(team);
+//
+//            Team teamB = new Team();
+//            team.setName("TeamB");
+//            em.persist(teamB);
+//
+//            Member member1 = new Member();
+//            member1.setUsername("member1");
+//            member1.setTeam(team);
+//            em.persist(member1);
+//
+//
+//            Member member2 = new Member();
+//            member2.setUsername("member2");
+//            member2.setTeam(teamB);
+//            em.persist(member2);
+//
+//            em.flush();
+//            em.clear();
 
-            em.persist(member);
+
+
+//            em.find()는 pk를 찍어서 JPA가 내부적으로 최적화 해줄 수 있음.
+//            Member m = em.find(Member.class, member1.getId());
+
+//            JPQL은 이거 그대로 sql로 번역이 된다. 즉시 로딩은 sql문을 실행하면서 값을 다 가져와야 하므로
+//            join을 통해 team도 가져오게 된다. 따라서 sql문이 두 개가 실행이 된다.
+//            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
+//                    .getResultList();
+
+//            System.out.println("m.getTeam().getClass() = " + m.getTeam().getClass());
+
+//            System.out.println("=========================");
+//            System.out.println("teamName = " + m.getTeam().getName());
+//            m.getTeam().getName(); // 초기화
+//            System.out.println("teamName = " + m.getTeam().getName());
+//            System.out.println("=========================");
+
+
+//            Member refMember = em.getReference(Member.class, member1.getId());
+//            Member m2 = em.getReference(Member.class, member2.getId());
+//            logic(m1, m2);
+
+//            System.out.println("refMember = " + refMember.getClass());
+//            refMember.getUsername();  // 강제 초기화
+
+//            Hibernate.initialize(refMember); // 프록시 강제 초기화
+
+
+//            proxy 인스턴스의 초기화 여부 확인
+//            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
+
+
+//            em.detach(refMember);
+
+
+//            System.out.println("refMember.getUsername() = " + refMember.getUsername());
+
+
+//            Member findMember = em.find(Member.class, member1.getId());
+
+//            System.out.println("findMember = " + findMember.getClass());
+
+            // JPA는 한 트랜잭션 내에 같은 것을 보장해줘야 하므로, repetableRead 보장
+//            System.out.println("a == a: " + (refMember == findMember));
+
+
+
+
+
+            //
+//            Member findMember = em.find(Member.class, member.getId());
+//            Member findMember = em.getReference(Member.class, member.getId());
+//            System.out.println("before findMember = " + findMember.getClass());
+//            System.out.println("findMember.id = " + findMember.getId());
+//            proxy 객체가 어? 나 Member 객체가 없는데 하면서 영속성 컨텍스트에 요청하면 영속성 컨텍스트가 DB에서 조회하고
+//            실제 Entity를 생성해서 target에 해당하는 메서드를 호출해준다.
+//            System.out.println("findMember.username = " + findMember.getUsername());
+//            System.out.println("findMember.username = " + findMember.getUsername());
+//            System.out.println("after findMember = " + findMember.getClass());
+
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+            em.remove(findParent);
+
+
 
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
+            e.printStackTrace();
         } finally {
             em.close();
         }
 
         emf.close();
     }
+
+//    private static void logic(Member m1, Member m2) {
+//        == 으로 비교하지마라.
+//        System.out.println("m1 == m2: " + (m1.getClass() == m2.getClass()));
+//        System.out.println("m1 == m2 " + (m1 instanceof Member));
+//        System.out.println("m1 == m2 " + (m2 instanceof Member));
+
+//    }
 }
