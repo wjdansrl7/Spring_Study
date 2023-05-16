@@ -23,10 +23,11 @@ class MemberServiceTest {
     @Autowired
     MemberRepository memberRepository;
 
-    @Autowired
-    EntityManager em;
+//    @Autowired
+//    EntityManager em;
 
     @Test
+    @Rollback(value = false)
     void 회원가입() throws Exception {
         // given
         Member member = new Member();
@@ -37,7 +38,7 @@ class MemberServiceTest {
 
 
         // then
-        em.flush();
+//        em.flush();
         assertEquals(member, memberRepository.findOne(savedId));
 
      }

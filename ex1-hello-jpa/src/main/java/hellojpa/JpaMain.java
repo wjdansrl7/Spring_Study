@@ -1,14 +1,13 @@
 package hellojpa;
 
-import org.hibernate.Hibernate;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.time.LocalDateTime;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Set;
 
 public class JpaMain {
 
@@ -489,28 +488,28 @@ public class JpaMain {
 
 //            em.persist(member);
 
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setHomeAddress(new Address("homeCity", "street", "1000"));
+//            Member member = new Member();
+//            member.setUsername("member1");
+//            member.setHomeAddress(new Address("homeCity", "street", "1000"));
 
-            member.getFavoriteFoods().add("치킨");
-            member.getFavoriteFoods().add("피자");
-            member.getFavoriteFoods().add("탕수육");
+//            member.getFavoriteFoods().add("치킨");
+//            member.getFavoriteFoods().add("피자");
+//            member.getFavoriteFoods().add("탕수육");
 
-            member.getAddressHistory().add(new AddressEntity("old1", "street", "1000"));
-            member.getAddressHistory().add(new AddressEntity("old2", "street", "1000"));
+//            member.getAddressHistory().add(new AddressEntity("old1", "street", "1000"));
+//            member.getAddressHistory().add(new AddressEntity("old2", "street", "1000"));
 
-            em.persist(member);
+//            em.persist(member);
 
-            em.flush();
-            em.clear();
+//            em.flush();
+//            em.clear();
 
 
 //            Member 테이블만 조회된 것으로 보아 값 타입 컬렉션들은 모두 지연 로딩이다.
-            System.out.println("============= START ==================");
+//            System.out.println("============= START ==================");
 
 //            TODO: 조회
-            Member findMember = em.find(Member.class, member.getId());
+//            Member findMember = em.find(Member.class, member.getId());
 
 //            List<Address> addressHistory = findMember.getAddressHistory();
 //            for (Address address : addressHistory) {
@@ -527,24 +526,53 @@ public class JpaMain {
 //            findMember.getHomeAddress().setCity("newCity"); => XXXX
 
 //            값 타입 하나를 바꿔도 아예 새로 갈아 끼워야 한다.
-            Address a = findMember.getHomeAddress();
-            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
+//            Address a = findMember.getHomeAddress();
+//            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
 
 //            치킨 -> 한식
 //            FavoriteFoods 자체가 String이기 때문에 update를 할 수가 없다. 따라서 새로 값을 넣어준다.
-            findMember.getFavoriteFoods().remove("치킨");
-            findMember.getFavoriteFoods().add("한식");
+//            findMember.getFavoriteFoods().remove("치킨");
+//            findMember.getFavoriteFoods().add("한식");
 
 //            주소 변경
 
 //            findMember.getAddressHistory().remove(new Address("old1", "street", "1000"));
 //            findMember.getAddressHistory().add(new Address("newCity1", "street", "1000"));
 
+//            동적 쿼리 생성 어렵다.(String 문자열이기 때문에)
+//            List<Member> result = em.createQuery("select m from Member m where m.username like '%kim%'",
+//                            Member.class)
+//                    .getResultList();
+
+//            for (Member member : result) {
+//                System.out.println("member = " + member);
+//            }
+
+            Member member = new Member();
+            member.setUsername("member1");
+            em.persist(member);
+
+            //flush -> commit, query
+
+            // Native Query -> flush가 진행된 후 실행
+            List resultList1 = em.createNativeQuery("select MEMBER_ID, city, street, zipcode, USERNAME from MEMBER", Member.class)
+                    .getResultList();
+
+            for (Object member1 : resultList1) {
+                System.out.println("member1 = " + member1);
+            }
 
 
 
+            //Criteria 사용 준비
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Member> query = cb.createQuery(Member.class);
 
+            Root<Member> m = query.from(Member.class);
 
+            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+            List<Member> resultList = em.createQuery(cq)
+                    .getResultList();
 
 
 

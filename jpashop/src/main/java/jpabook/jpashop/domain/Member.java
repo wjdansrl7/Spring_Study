@@ -2,6 +2,7 @@ package jpabook.jpashop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @NotEmpty
     private String name;
 
     @Embedded
@@ -26,7 +28,7 @@ public class Member {
 
 
 //    나는 Order table에 있는 member에 의해서 매핑된 것.
-    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
