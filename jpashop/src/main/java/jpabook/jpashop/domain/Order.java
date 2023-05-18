@@ -36,11 +36,9 @@ public class Order {
 //    persist(order)
 //    -> persist(order) 상위 Entity 하나로 하위 Entity까지 모든 작업을 전파
 
-    @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @JsonIgnore
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;

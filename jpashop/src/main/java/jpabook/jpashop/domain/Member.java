@@ -28,7 +28,7 @@ public class Member {
 
 
 //    나는 Order table에 있는 member에 의해서 매핑된 것.
-//    @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
