@@ -55,6 +55,7 @@ public class InitDb {
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
 
             em.persist(order);
+
         }
 
         private Delivery createDelivery(Member member) {
@@ -99,6 +100,8 @@ public class InitDb {
 
             em.persist(order);
         }
+
+
     }
 
 
