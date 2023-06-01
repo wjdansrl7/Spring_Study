@@ -105,6 +105,28 @@ public class  OrderRepository {
     }
 
 
+    /**
+     * distinct의 두 가지 기능
+     * 1. select 문에 distinct를 붙여준다.
+     * 2. 엔티티가 중복인 경우 걸러준다.(데이터베이스에서는 한 행의 모든 값이 같아야 같은 것으로 하기 때문에)
+     */
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                        "select distinct o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch  o.delivery d" +
+                                " join fetch o.orderItems oi" +
+                                " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
 
-
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                        "select o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

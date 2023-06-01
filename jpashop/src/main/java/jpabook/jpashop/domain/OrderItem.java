@@ -7,9 +7,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.dialect.identity.HSQLIdentityColumnSupport;
 
 import static jakarta.persistence.FetchType.*;
 
+//@BatchSize(size = 100)
 @Entity
 @Getter
 @Setter
