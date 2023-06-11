@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa2.dto.MemberDto;
 import study.datajpa2.entity.Member;
+import study.datajpa2.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,9 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    TeamRepository teamRepository;
 
     @Test
     void testMember() throws Exception {
@@ -65,8 +71,142 @@ class MemberRepositoryTest {
 
         long deletedCount = memberRepository.count();
         assertThat(deletedCount).isEqualTo(0);
-
-
-
     }
+
+    @Test
+    void findByUsernameAndAgeGreaterThan() throws Exception {
+        // given
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        // when
+        List<Member> result = memberRepository.findByUsernameAndAgeGreaterThan("AAA", 15);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getUsername()).isEqualTo("AAA");
+        assertThat(result.get(0).getAge()).isEqualTo(20);
+     }
+
+     @Test
+     void testNamedQuery() throws Exception {
+         // given
+         Member m1 = new Member("AAA", 10);
+         Member m2 = new Member("BBB", 20);
+
+         memberRepository.save(m1);
+         memberRepository.save(m2);
+
+         // when
+         List<Member> result = memberRepository.findByUsername("AAA");
+         Member findMember = result.get(0);
+
+
+         // then
+         assertThat(findMember).isEqualTo(m1);
+
+      }
+
+      @Test
+      void testQuery() throws Exception {
+          // given
+          Member m1 = new Member("AAA", 10);
+          Member m2 = new Member("BBB", 20);
+
+          memberRepository.save(m1);
+          memberRepository.save(m2);
+
+          // when
+          List<Member> result = memberRepository.findUser("AAA", 10);
+
+
+          // then
+          assertThat(result.get(0)).isEqualTo(m1);
+
+
+       }
+
+       @Test
+       void findUsernameList() throws Exception {
+           // given
+           Member m1  = new Member("AAA", 10);
+           Member m2 = new Member("BBB", 20);
+
+           memberRepository.save(m1);
+           memberRepository.save(m2);
+
+           // when
+           List<String> usernameList = memberRepository.findByUsernameList();
+           for (String s : usernameList) {
+               System.out.println("s = " + s);
+           }
+           // then
+        }
+
+        @Test
+        void findMemberDto() throws Exception {
+            // given
+            Member m1 = new Member("AAA", 10);
+            memberRepository.save(m1);
+
+            Team team = new Team("teamA");
+            teamRepository.save(team);
+
+            m1.setTeam(team);
+
+            // when
+            List<MemberDto> memberDto = memberRepository.findMemberDto();
+
+            for (MemberDto dto : memberDto) {
+                System.out.println("dto = " + dto);
+            }
+
+            // then
+         }
+
+         @Test
+         void findMemberTest() throws Exception {
+             // given
+             Member m1  = new Member("AAA", 10);
+             Member m2 = new Member("BBB", 20);
+
+             memberRepository.save(m1);
+             memberRepository.save(m2);
+
+             // when
+             List<Member> findMember = memberRepository.findMembers("BBB");
+
+             for (Member member : findMember) {
+                 System.out.println("member = " + member);
+             }
+
+             // then
+
+
+          }
+
+          @Test
+          void findNames() throws Exception {
+              // given
+
+              Member m1  = new Member("AAA", 10);
+              Member m2  = new Member("BBB", 20);
+              memberRepository.save(m1);
+              memberRepository.save(m2);
+
+
+              // when
+              List<Member> result = memberRepository.findNames(Arrays.asList("AAA", "BBB"));
+              for (Member member : result) {
+                  System.out.println("member = " + member);
+              }
+
+
+              // then
+
+
+           }
 }
