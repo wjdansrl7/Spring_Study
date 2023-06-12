@@ -367,13 +367,24 @@ class MemberRepositoryTest {
         em.clear();
 
         // when
-        // 조회만 목적으로 사용한다고 hibernate에게 알려줘서 snapshot같은 것을 만들어두지 않는다.
         List<Member> findMember = memberRepository.findLockByUsername("member1");
+
+        // then
+    }
+
+    @Test
+    void callCustom() throws Exception {
+        // given
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+
+
+        // when
+
 
         // then
 
 
-    }
+     }
 
 
 
