@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl2.dto.MemberDto;
 import study.querydsl2.dto.QMemberDto;
@@ -950,4 +952,126 @@ public class QuerydslBasicTest {
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
     }
+
+    @Test
+    @Commit
+    void bulkUpdate() throws Exception {
+        // given
+
+        // 실행 전
+        // member1 = 10 -> DB member1
+        // member2 = 20 -> DB member1
+        // member3 = 30 -> DB member3
+        // member4 = 40 -> DB member4
+
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        System.out.println("count = " + count); // update된 튜플의 개수를 반환
+
+        // 벌크 연산을 실행하고 나서 영속성 컨텍스트를 초기화해준다.
+        em.flush();
+        em.clear();
+
+        //실행 후
+        // 1 member1 = 10 -> DB 비회원
+        // 2 member2 = 20 -> DB 비회원
+        // 3 member3 = 30 -> DB member3
+        // 4 member4 = 40 -> DB member4
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member member1 : result) {
+            System.out.println("member1 = " + member1);
+        }
+
+
+        // when
+
+
+        // then
+     }
+
+     @Test
+     void bulkAdd() throws Exception {
+         // given
+         long count = queryFactory
+                 .update(member)
+                 .set(member.age, member.age.multiply(2))
+                 .execute();
+
+         // when
+
+
+         // then
+      }
+
+      @Test
+      void bulkDelete() throws Exception {
+          // given
+          long count = queryFactory
+                  .delete(member)
+                  .where(member.age.gt(18))
+                  .execute();
+
+          // when
+
+
+          // then
+          assertThat(count).isEqualTo(3);
+       }
+
+       // SQL function은 JPA와 같이 Dialect에 등록된 내용만 호출할 수 있다.
+       @Test
+       void sqlFunction() throws Exception {
+           // given
+           List<String> result = queryFactory
+                   .select(
+                           Expressions.stringTemplate("function('replace', {0}, {1}, {2})",
+                                   member.username, "member", "M"))
+                   .from(member)
+                   .fetch();
+
+           for (String s : result) {
+               System.out.println("s = " + s);
+           }
+
+
+           // when
+
+
+           // then
+        }
+
+        // lower 같은 ansi 표준 함수들은 querydsl이 상당부분 내장하고 있다.
+        @Test
+        void sqlFunction2() throws Exception {
+            // given
+            List<String> result = queryFactory
+                    .select(member.username)
+                    .from(member)
+//                    .where(member.username.eq(
+//                            Expressions.stringTemplate("function('lower', {0})", member.username)
+//                    ))
+                    .where(member.username.eq(member.username.lower()))
+                    .fetch();
+
+            for (String s : result) {
+                System.out.println("s = " + s);
+            }
+
+            // when
+
+
+            // then
+
+
+         }
+
+
 }
