@@ -3,11 +3,11 @@ package jpabook.jpashop2.service;
 import jpabook.jpashop2.domain.Member;
 import jpabook.jpashop2.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,13 +49,15 @@ public class MemberService {
     }
 
     public Member findOne(Long memberId) {
-        return memberRepository.findOne(memberId);
+//        return memberRepository.findOne(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
     @Transactional
     public void update(Long id, String name) {
         // 변경 감지를 사용해서 데이터를 수정
-        Member member = memberRepository.findOne(id);
+//        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.setName(name);
     }
 }

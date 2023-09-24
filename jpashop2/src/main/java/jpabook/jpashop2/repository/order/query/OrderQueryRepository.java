@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// OrderQueryRepository: 화면이나 API에 의존관계가 있는 떼어내려고
 @Repository
 @RequiredArgsConstructor
 public class OrderQueryRepository {
@@ -79,7 +80,7 @@ public class OrderQueryRepository {
 
     private List<Long> toOrderIds(List<OrderQueryDto> result) {
         return result.stream()
-                .map(o -> o.getOrderId())
+                .map(OrderQueryDto::getOrderId)
                 .collect(Collectors.toList());
     }
 
@@ -98,6 +99,7 @@ public class OrderQueryRepository {
     }
 
 
+    // 쿼리를 한 번에 출력할 수 있지만, 페이징은 불가능
     public List<OrderFlatDto> findAllByDto_flat() {
         return em.createQuery(
                         "select new jpabook.jpashop2.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count)" +

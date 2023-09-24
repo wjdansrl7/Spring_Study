@@ -6,8 +6,10 @@ import jpabook.jpashop2.repository.order.query.OrderFlatDto;
 import jpabook.jpashop2.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop2.repository.order.query.OrderQueryDto;
 import jpabook.jpashop2.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop2.service.query.OrderQueryService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,8 +44,8 @@ public class OrderApiController {
     public List<Order> ordersV1() {
         List<Order> all = orderRepository.findAllByString(new OrderSearch());
         for (Order order : all) {
-//            order.getMember().getName(); // Lazy 강제 초기화
-//            order.getDelivery().getAddress(); // Lazy 강제 초기화
+            order.getMember().getName(); // Lazy 강제 초기화
+            order.getDelivery().getAddress(); // Lazy 강제 초기화
             List<OrderItem> orderItems = order.getOrderItems();
             orderItems.stream().forEach(o -> o.getItem().getName()); // Lazy 강제 초기화
         }
@@ -96,6 +98,8 @@ public class OrderApiController {
         }
     }
 
+    private final OrderQueryService orderQueryService;
+
     // V3: 엔티티를 DTO로 변환 - 페치 조인 최적화
     @GetMapping("/api/v3/orders")
     public List<OrderDto> ordersV3() {
@@ -107,6 +111,12 @@ public class OrderApiController {
         return result;
     }
 
+    // OSIV: false일 경우 영속성 컨텍스트의 생존 범위가 Service, Repository계층
+    // 이므로, 따로 Service 계층에서 처리해주었다.
+//    @GetMapping("/api/v3/orders")
+//    public List<jpabook.jpashop2.service.query.OrderDto> ordersV3() {
+//        return orderQueryService.ordersV3();
+//    }
     /**
      * v3.1 엔티티를 조회해서 DTO로 변환 페이징 고려
      * ToOne 관계만 우선 모두 페치 조인으로 최적화
@@ -117,6 +127,7 @@ public class OrderApiController {
             defaultValue = "0") int offset,
                                        @RequestParam(value = "limit", defaultValue
                                                = "100") int limit) {
+
         List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
 
         List<OrderDto> result = orders.stream()
